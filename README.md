@@ -30,7 +30,7 @@ Follow these steps to deploy everything automatically.
 SSH into your Proxmox host and clone this repository:
 
 
-git clone https://github.com/your-username/obs-lxc-setup.git
+git clone https://github.com/Nesslax/obs-lxc-setup
 cd obs-lxc-setup
 
 2. Make the Script Executable
