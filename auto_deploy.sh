@@ -3,7 +3,7 @@
 set -e
 
 # User Configuration
-CONTAINER_ID=100
+CONTAINER_ID=500
 CONTAINER_NAME="obs-vnc-lxc"
 TEMPLATE="local:vztmpl/debian-11-standard_11.6-1_amd64.tar.zst"
 STORAGE="local-lvm"
