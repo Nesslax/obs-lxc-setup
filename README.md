@@ -31,6 +31,7 @@ SSH into your Proxmox host and clone this repository:
 
 
 git clone https://github.com/Nesslax/obs-lxc-setup
+
 cd obs-lxc-setup
 
 2. Make the Script Executable
