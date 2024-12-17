@@ -4,7 +4,7 @@ set -e
 
 # User Configuration
 CONTAINER_NAME="obs-vnc-lxc"
-TEMPLATE="local:vztmpl/debian-11-standard_11.6-1_amd64.tar.zst"
+TEMPLATE="local:vztmpl/debian-11-standard_11.7-1_amd64.tar.zst"
 STORAGE="local-lvm"
 MEMORY=1024
 CORES=2
@@ -18,7 +18,7 @@ function check_template() {
     if ! pveam list local | grep -q "debian-11-standard"; then
         echo "Template not found. Downloading the Debian 11 template..."
         pveam update
-        if ! pveam download local debian-11-standard_11.6-1_amd64.tar.zst; then
+        if ! pveam download local debian-11-standard_11.7-1_amd64.tar.zst; then
             echo "Error: Failed to download template. Check your network or Proxmox storage."
             exit 1
         fi
