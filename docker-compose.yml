@@ -2,14 +2,16 @@ version: "3.8"
 
 services:
   obs-vnc:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: obs_vnc_container
     ports:
       - "5901:5901"  # VNC Port
     volumes:
-      - ./host_shared:/shared  # Shared directory between host and container
+      - /shared:/shared  # Shared directory
     environment:
-      - VNC_PASSWD=123456
+      - VNC_PASSWD=123456  # Default VNC password
     deploy:
       resources:
         limits:
