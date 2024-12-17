@@ -5,9 +5,13 @@ This repository automates the deployment of an OBS VNC Server inside a Proxmox L
 Features
 
 ✅ Automatic creation of a Proxmox LXC container
+
 ✅ Dockerized OBS VNC server running on port 5901
+
 ✅ Persistent shared directory between host and container
+
 ✅ Health checks and automatic restarts for reliability
+
 ✅ Fully automated with a single script
 
 
