@@ -1,0 +1,11 @@
+[Unit]
+Description=OBS with VNC Server
+After=docker.service
+
+[Service]
+ExecStart=/usr/bin/docker-compose -f /root/obs-lxc-setup/docker-compose.yml up -d
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
