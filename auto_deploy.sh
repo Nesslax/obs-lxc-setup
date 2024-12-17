@@ -99,14 +99,12 @@ pct create ${CONTAINER_ID} ${TEMPLATE} \
     --net0 name=eth0,bridge=vmbr0,ip=dhcp \
     --password "${ROOT_PASSWORD}"
 
-# Step 6: Update LXC configuration with ostype and DNS server
-echo "Configuring LXC container..."
-cat <<EOF > /etc/pve/lxc/${CONTAINER_ID}.conf
-# LXC Configuration for Docker, Shared Memory, and DNS
-ostype: debian
+# Step 6: Append configuration to LXC container
+echo "Appending LXC configuration..."
+cat <<EOF >> /etc/pve/lxc/${CONTAINER_ID}.conf
+# Additional LXC Configuration
 features: nesting=1
 arch: ${ARCH}
-lxc.cgroup.memory.limit_in_bytes: 256M
 mp0: ${SHARED_DIR},mp=/shared
 nameserver: ${DNS_SERVER}
 EOF
