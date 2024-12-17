@@ -116,12 +116,16 @@ pct start ${CONTAINER_ID}
 # Step 8: Install dependencies and set up OBS VNC inside the container
 echo "Installing dependencies and setting up OBS VNC..."
 pct exec ${CONTAINER_ID} -- bash -c "
+    # Fix DNS resolution
+    echo 'nameserver ${DNS_SERVER}' > /etc/resolv.conf
+"
+pct exec ${CONTAINER_ID} -- bash -c "
     # Update the repository
-    echo 'Update the repository'
-    apt update && apt upgrade -y 
+    echo 'Updating the repository...'
+    apt update && apt upgrade -y
 
-    # Install Docker and additional tools
-    echo 'Installing Docker and VNC server...'
+    # Install Docker, Docker Compose, and VNC server
+    echo 'Installing Docker, Docker Compose, and VNC server...'
     apt install -y docker.io docker-compose tigervnc-standalone-server x11-apps
 "
 
