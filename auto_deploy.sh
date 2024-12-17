@@ -89,6 +89,7 @@ create_shared_dir
 # Step 5: Create the LXC container
 echo "Creating LXC container with ID ${CONTAINER_ID}..."
 pct create ${CONTAINER_ID} ${TEMPLATE} \
+    --ostype debian \
     --arch ${ARCH} \
     --features nesting=1 \
     --hostname ${CONTAINER_NAME} \
