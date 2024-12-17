@@ -116,23 +116,31 @@ pct start ${CONTAINER_ID}
 # Step 8: Install dependencies and set up OBS VNC inside the container
 echo "Installing dependencies and setting up OBS VNC..."
 pct exec ${CONTAINER_ID} -- bash -c "
-    # Update the repository to oldstable and fix warnings
+    # Ensure DNS resolution is working
+    echo 'nameserver ${DNS_SERVER}' > /etc/resolv.conf
+    echo 'DNS resolution fixed. Testing...'
+    ping -c 3 deb.debian.org || { echo 'DNS resolution failed!'; exit 1; }
+
+    # Update the repository
+    echo 'Fixing repository to oldstable...'
     sed -i 's/bullseye/bullseye-oldstable/g' /etc/apt/sources.list
-    apt update && apt upgrade -y
+    apt update --fix-missing
 
-    # Install essential tools
-    apt install -y curl gnupg2 lsb-release apt-transport-https ca-certificates software-properties-common
+    # Install minimal tools required for further setup
+    echo 'Installing curl, gpg, and other essential tools...'
+    apt install -y apt-utils gnupg gpgv dirmngr ca-certificates curl
 
-    # Add Docker repository manually
+    # Manually add Docker repository and key
+    echo 'Adding Docker repository...'
     curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-    echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable' > /etc/apt/sources.list.d/docker.list
+    echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable' > /etc/apt/sources.list.d/docker.list
 
-    # Update and install Docker
-    apt update
-    apt install -y docker-ce docker-ce-cli containerd.io
+    # Update again with the new Docker repository
+    apt update --fix-missing
 
-    # Install TigerVNC and other required tools
-    apt install -y tigervnc-standalone-server x11-apps
+    # Install Docker and additional tools
+    echo 'Installing Docker and VNC server...'
+    apt install -y docker-ce docker-ce-cli containerd.io tigervnc-standalone-server x11-apps
 "
 
 # Step 9: Copy files into the container
