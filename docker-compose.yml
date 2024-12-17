@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  obs-vnc:
+    build: .
+    container_name: obs_vnc_container
+    ports:
+      - "5901:5901"  # VNC Port
+    volumes:
+      - ./host_shared:/shared  # Shared directory between host and container
+    environment:
+      - VNC_PASSWD=123456
+    deploy:
+      resources:
+        limits:
+          shm_size: "256m"  # Shared memory
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "5901"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: always
