@@ -116,31 +116,13 @@ pct start ${CONTAINER_ID}
 # Step 8: Install dependencies and set up OBS VNC inside the container
 echo "Installing dependencies and setting up OBS VNC..."
 pct exec ${CONTAINER_ID} -- bash -c "
-    # Ensure DNS resolution is working
-    echo 'nameserver ${DNS_SERVER}' > /etc/resolv.conf
-    echo 'DNS resolution fixed. Testing...'
-    ping -c 3 deb.debian.org || { echo 'DNS resolution failed!'; exit 1; }
-
     # Update the repository
-    echo 'Fixing repository to oldstable...'
-    sed -i 's/bullseye/bullseye-oldstable/g' /etc/apt/sources.list
-    apt update --fix-missing
-
-    # Install minimal tools required for further setup
-    echo 'Installing curl, gpg, and other essential tools...'
-    apt install -y apt-utils gnupg gpgv dirmngr ca-certificates curl
-
-    # Manually add Docker repository and key
-    echo 'Adding Docker repository...'
-    curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-    echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian bullseye stable' > /etc/apt/sources.list.d/docker.list
-
-    # Update again with the new Docker repository
-    apt update --fix-missing
+    echo 'Update the repository'
+    apt update && apt upgrade -y 
 
     # Install Docker and additional tools
     echo 'Installing Docker and VNC server...'
-    apt install -y docker-ce docker-ce-cli containerd.io tigervnc-standalone-server x11-apps
+    apt install -y docker.io docker-compose tigervnc-standalone-server x11-apps
 "
 
 # Step 9: Copy files into the container
