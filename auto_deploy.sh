@@ -57,16 +57,36 @@ function prompt_container_id() {
     done
 }
 
+# Function to prompt for root password
+function prompt_root_password() {
+    while true; do
+        read -sp "Enter the root password for the container: " ROOT_PASSWORD
+        echo
+        read -sp "Confirm the root password: " CONFIRM_PASSWORD
+        echo
+
+        if [ "${ROOT_PASSWORD}" != "${CONFIRM_PASSWORD}" ]; then
+            echo "Error: Passwords do not match. Please try again."
+        else
+            echo "Password confirmed."
+            break
+        fi
+    done
+}
+
 # Step 1: Prompt for Container ID
 prompt_container_id
 
-# Step 2: Check and Download Template
+# Step 2: Prompt for Root Password
+prompt_root_password
+
+# Step 3: Check and Download Template
 check_template
 
-# Step 3: Create Shared Directory
+# Step 4: Create Shared Directory
 create_shared_dir
 
-# Step 4: Create the LXC container
+# Step 5: Create the LXC container
 echo "Creating LXC container with ID ${CONTAINER_ID}..."
 pct create ${CONTAINER_ID} ${TEMPLATE} \
     --arch ${ARCH} \
@@ -75,9 +95,10 @@ pct create ${CONTAINER_ID} ${TEMPLATE} \
     --storage ${STORAGE} \
     --cores ${CORES} \
     --memory ${MEMORY} \
-    --net0 name=eth0,bridge=vmbr0,ip=dhcp
+    --net0 name=eth0,bridge=vmbr0,ip=dhcp \
+    --password "${ROOT_PASSWORD}"
 
-# Step 5: Set architecture and DNS server in LXC configuration
+# Step 6: Set architecture and DNS server in LXC configuration
 echo "Configuring LXC container..."
 cat <<EOF > /etc/pve/lxc/${CONTAINER_ID}.conf
 # LXC Configuration for Docker, Shared Memory, and DNS
@@ -88,11 +109,11 @@ mp0: ${SHARED_DIR},mp=/shared
 nameserver: ${DNS_SERVER}
 EOF
 
-# Step 6: Start the container
+# Step 7: Start the container
 echo "Starting the container..."
 pct start ${CONTAINER_ID}
 
-# Step 7: Install dependencies and set up OBS VNC inside the container
+# Step 8: Install dependencies and set up OBS VNC inside the container
 echo "Installing dependencies and setting up OBS VNC..."
 pct exec ${CONTAINER_ID} -- bash -c "
     echo 'nameserver ${DNS_SERVER}' > /etc/resolv.conf
@@ -102,13 +123,13 @@ pct exec ${CONTAINER_ID} -- bash -c "
     apt update && apt install -y docker-ce docker-ce-cli containerd.io tigervnc-standalone-server x11-apps
 "
 
-# Step 8: Copy files into the container
+# Step 9: Copy files into the container
 echo "Copying Docker and systemd files into the container..."
 pct push ${CONTAINER_ID} ./Dockerfile /root/Dockerfile
 pct push ${CONTAINER_ID} ./docker-compose.yml /root/docker-compose.yml
 pct push ${CONTAINER_ID} ./systemd/obs-vnc.service /etc/systemd/system/obs-vnc.service
 
-# Step 9: Run OBS VNC Docker service
+# Step 10: Run OBS VNC Docker service
 echo "Setting up OBS VNC Docker service..."
 pct exec ${CONTAINER_ID} -- bash -c "
     cd /root
